@@ -94,7 +94,7 @@ class ActionPermissions(rf_permissions.BasePermission):
         return request.user.has_perm(expected_perm)
 
 
-class ReadOnlyPermissions(rf_permissions.BasePermission):
+class AnonymousReadOnlyPermissions(rf_permissions.BasePermission):
     def has_permission(self, request, view):
         if request.method in rf_permissions.SAFE_METHODS:
             return True
