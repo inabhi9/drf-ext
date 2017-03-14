@@ -37,9 +37,12 @@ class APIClient(_APIClient):
         if response.get('Content-Type') != 'application/json':
             return response
 
-        resp = response.json()
-        response.meta = resp.get('meta')
-        response.data = resp.get('data') or resp.get('error')
+        try:
+            resp = response.json()
+            response.meta = resp.get('meta')
+            response.data = resp.get('data') or resp.get('error')
+        except:
+            pass
 
         return response
 
