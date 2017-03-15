@@ -7,11 +7,13 @@ Useful helper methods that frequently used in this project
 
 import inspect
 import logging
-import sys
-import traceback
-
 import ntpath
 import re
+import sys
+import tempfile
+import traceback
+
+import requests
 from django.conf import settings
 from rest_framework.views import exception_handler
 
@@ -177,3 +179,14 @@ def sec2time(seconds):
     m, s = divmod(seconds, 60)
     h, m = divmod(m, 60)
     return "%d:%02d:%02d" % (h, m, s)
+
+
+def download_file(url: str):
+    f = tempfile.NamedTemporaryFile(delete=False)
+    # NOTE the stream=True parameter
+    r = requests.get(url, stream=True)
+    for chunk in r.iter_content(chunk_size=1024):
+        if chunk:  # filter out keep-alive new chunks
+            f.write(chunk)
+    f.close()
+    return f
