@@ -84,6 +84,15 @@ class ModelSerializer(rf_serializers.ModelSerializer, Serializer):
 
         return field_class, field_kwargs
 
+    def create(self, validated_data):
+        # Exclude those fields defined under Meta.exclude_on_create attribute
+        exclude_on_create = getattr(self.Meta, 'exclude_on_create', [])
+        for field in exclude_on_create:
+            validated_data.pop(field, None)
+
+        return super().create(validated_data)
+
+
     def update(self, instance, validated_data):
         # Exclude those fields defined under Meta.exclude_on_update attribute
         exclude_on_update = getattr(self.Meta, 'exclude_on_update', [])
