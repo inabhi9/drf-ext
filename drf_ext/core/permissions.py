@@ -56,7 +56,7 @@ class IsOwnerPermissions(rf_permissions.BasePermission):
         if _u == obj:
             return True
 
-        result = any(_u == getattr(obj, field) or _u.id == getattr(obj, field)
+        result = any(_u == getattr(obj, field, None) or _u.id == getattr(obj, field, None)
                      for field in ownership_fields)
         if result is False:
             L.warning('Permission denied', extra={'user': _u,
