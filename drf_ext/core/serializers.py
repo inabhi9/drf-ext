@@ -35,6 +35,7 @@ class Serializer(rf_serializers.Serializer):
         class SubSerializer(cls):
             class Meta(cls.Meta):
                 fields = only_fields
+                exclude = None
 
         return SubSerializer
 
