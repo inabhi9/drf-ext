@@ -144,3 +144,31 @@ class DistanceToPointFilterBackend(rf_filters.BaseFilterBackend):
         ]))
 
         return qs
+
+
+class SearchFilter(rf_filters.SearchFilter):
+    """
+    Filter class to perform search.
+
+    It reads ``search`` query parameter string and perform searches using queryset. Multiple search
+    term can be separated by comma.
+
+    :param Manager search_method: Method that should have ``.search(term)`` signature. \
+    This filter calls that method and filter the queryset
+    """
+
+    def get_search_terms(self, request):
+        """
+        Search terms are set by a ?search=... query parameter.
+        The while space or comma delimited has been removed and whole string will be returned
+        """
+        params = request.query_params.get(self.search_param, '')
+        return params.replace(',', ' ').strip()
+
+    def filter_queryset(self, request, queryset, view):
+        search_method = getattr(view, 'search_method', None)
+        term = self.get_search_terms(request)
+        if search_method and term:
+            return queryset & search_method(term)
+
+        return super(SearchFilter, self).filter_queryset(request, queryset, view)
