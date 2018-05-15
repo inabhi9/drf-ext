@@ -71,6 +71,10 @@ class JSONRenderer(RFJSONRenderer):
 
                     err_list = data.pop(k)
                     if isinstance(err_list, list):
+                        if isinstance(err_list[0], dict):
+                            k = 'item.%s' % list(err_list[0].keys())[0]
+                            err_list[0] = list(err_list[0].values())[0][0]
+
                         detail = err_list[0].replace(
                             'This field', '`%s`' % helper.snake_case_to_title(k)
                         ).replace(
