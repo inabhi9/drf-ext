@@ -32,3 +32,6 @@ class APIException(exceptions.APIException):
             detail = detail.format(**param)
         super(APIException, self).__init__(detail=detail)
         self.error_code = error_code
+
+
+m = Messages
