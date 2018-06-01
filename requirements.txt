@@ -1,5 +1,5 @@
 django-filter>=0.14.0,<=2.0
-drf-extensions>=0.2.8,<=1.0
+https://github.com/chibisov/drf-extensions/archive/00712396be979aaa5a86246bee39284b5e5e8d71.zip
 mock
 pytz
 raven
