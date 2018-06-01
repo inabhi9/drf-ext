@@ -1,0 +1,7 @@
+django-filter>=0.14.0,<=2.0
+drf-extensions>=0.2.8,<=1.0
+mock
+pytz
+raven
+six
+wheel
