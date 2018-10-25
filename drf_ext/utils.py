@@ -11,9 +11,11 @@ import logging
 import re
 import sys
 import traceback
+from contextlib import contextmanager
 
 import pytz
 from django.conf import settings
+from django.core.cache import cache
 from rest_framework.views import exception_handler
 
 from . import errors as err
@@ -161,6 +163,27 @@ def utc_to_local_time(t, to_tz, fmt='%H:%M'):
     if fmt is None:
         return local_dt.time()
     return local_dt.strftime(fmt)
+
+
+@contextmanager
+def redis_lock(key, timeout=None):
+    lock = cache.lock(key, timeout=timeout)
+    if not lock.acquire(blocking=False):
+        raise err.LockError('Cannot acquire the lock. The same job might be in progress.')
+
+    def _release_lock():
+        try:
+            lock.release()
+        except Exception:
+            pass
+
+    try:
+        yield
+    except Exception:
+        _release_lock()
+        raise
+
+    _release_lock()
 
 
 class Constant(str):

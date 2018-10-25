@@ -34,4 +34,8 @@ class APIException(exceptions.APIException):
         self.error_code = error_code
 
 
+class LockError(APIException):
+    pass
+
+
 m = Messages
