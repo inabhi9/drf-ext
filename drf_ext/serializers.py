@@ -80,7 +80,11 @@ class ModelSerializer(rf_serializers.ModelSerializer, Serializer):
         :param instance: Instance where owner field will be looked up
         :return dict: Filtered dict
         """
-        user = self.context['request'].user
+        try:
+            user = self.context['request'].user
+        except (KeyError, AttributeError):
+            return data
+
         private_fields = getattr(self.Meta, 'private_fields', None)
         if not private_fields:
             return data
