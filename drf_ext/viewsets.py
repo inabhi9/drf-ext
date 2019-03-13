@@ -136,7 +136,17 @@ class NestedViewSetMixin(_NestedViewSetMixin):
         Checks the object's parent object permission and returns it
         """
         # Getting related field name
-        parent_object_name = list(self.get_parents_query_dict().keys())[:1][0]
+        parent_object_name = None
+
+        # Spliting direct foreign key and nested foreign keys; later we'll have to query indirect
+        # foreign key for permission
+        foreign_keys = []
+        for key in self.get_parents_query_dict().keys():
+            if '__' in key:
+                foreign_keys += key.split('__')[1:]
+            else:
+                parent_object_name = key
+
         # Getting parent model
         parent_model = self.get_queryset().model._meta.get_field(parent_object_name).related_model
         # Getting parent object
@@ -145,5 +155,10 @@ class NestedViewSetMixin(_NestedViewSetMixin):
         )
 
         self.check_object_permissions(self.request, parent_object)
+
+        __parent_object = parent_object
+        for key in foreign_keys:
+            __parent_object = getattr(__parent_object, key)
+            self.check_object_permissions(self.request, __parent_object)
 
         return parent_object
