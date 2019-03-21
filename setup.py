@@ -10,7 +10,7 @@ except ImportError:
 me = 'Abhinav Kotak'
 memail = 'in.abhi9@gmail.com'
 
-packages = ['drf_ext', 'drf_ext.db']
+packages = ['drf_ext', 'drf_ext.db', 'drf_ext.notification']
 install_requires = open('requirements.txt', 'r').readlines()
 
 setup(

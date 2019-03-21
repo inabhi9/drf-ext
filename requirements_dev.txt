@@ -6,3 +6,5 @@ drf-extensions==0.3.1
 raven==6.9.0
 faker=0.8.15
 https://github.com/chibisov/drf-extensions/archive/00712396be979aaa5a86246bee39284b5e5e8d71.zip
+djrill==2.1.0
+factory-boy==2.11.1
