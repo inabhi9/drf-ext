@@ -62,10 +62,10 @@ class EmailNotification(object):
             DESCRIPTION=notification.description,
             **extra
         )
-        self.msg.global_merge_vars.update(**self._get_global_vars())
+        self.msg.global_merge_vars.update(**self._get_global_vars(notification))
 
         # Attachment
-        quotefiles = self._attach_from_notification(notification)
+        files = self._attach_from_notification(notification)
 
         to_ = [self.to_user.email] if self.to_user else to_emails
         self.msg.to = to_
@@ -82,11 +82,16 @@ class EmailNotification(object):
             self.msg.from_email = notification.owner.email
             self.msg.from_name = notification.owner.get_full_name()
 
+        self.before_send(notification)
+
         self.msg.send()
 
-        map(lambda f: os.unlink(f.name), quotefiles)
+        map(lambda f: os.unlink(f.name), files)
 
         return self.msg.mandrill_response
+
+    def before_send(self, notification):
+        pass
 
     @classmethod
     def _get_user_vars(cls, user_instance):
@@ -98,7 +103,7 @@ class EmailNotification(object):
         }
 
     @classmethod
-    def _get_global_vars(cls):
+    def _get_global_vars(cls, notification):
         return {'APP_WEB_URL': settings.APP_WEB_URL}
 
     @classmethod
@@ -129,6 +134,3 @@ class EmailNotification(object):
                 self.msg.attach_file(filepath)
 
         return files
-
-
-emailer = EmailNotification()

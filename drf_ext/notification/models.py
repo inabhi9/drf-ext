@@ -11,7 +11,7 @@ from django.db.models.query import QuerySet
 
 from drf_ext.db.models import Manager, Model
 from . import signals
-from .emailer import emailer
+from .emailer import EmailNotification
 
 L = logging.getLogger('drf_ext.' + __name__)
 
@@ -79,6 +79,7 @@ class AbstractNotification(Model):
                                             blank=True, editable=False)
 
     objects = NotificationManager.from_queryset(NotificationQuerySet)()
+    emailer = EmailNotification()
 
     class Meta(Model.Meta):
         abstract = True
@@ -90,7 +91,7 @@ class AbstractNotification(Model):
         L.info('Sending notification to users and groups')
 
         if 'email' in channel:
-            res = emailer.send(self)
+            res = self.emailer.send(self)
             L.info('Sent notification through email. Result: (%s) for %s', res, self)
 
         L.info('Notification sent: %s', self)
