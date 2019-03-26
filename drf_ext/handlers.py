@@ -14,9 +14,15 @@ class SentryHandler(handlers.SentryHandler):
     """
 
     def _emit(self, record):
+        request = getattr(record, 'request', None)
+        request_id = None
+        if request:
+            request_id = getattr(request, 'id', None)
+
         tags = getattr(record, 'tags', {})
         tags.update({
-            'thread': record.thread
+            'thread': record.thread,
+            'request_id': request_id
         })
         record.tags = tags
 
