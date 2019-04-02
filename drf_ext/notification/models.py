@@ -41,12 +41,12 @@ class NotificationManager(Manager):
         :param User user: The user, notification should be marked as read for
         :return int:
         """
-        return (self.only_read(user.id)
+        return (self.only_unread(user.id)
                 .update(read_by_user_ids=RawSQL('read_by_user_ids || %s', [user.id])))
 
 
 class NotificationQuerySet(QuerySet):
-    def only_read(self, user_id):
+    def only_unread(self, user_id):
         """
         Filter queryset by notifications which are not read by the user
         """
