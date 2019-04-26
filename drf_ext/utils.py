@@ -8,6 +8,7 @@ Useful helper methods that frequently used in this project
 import datetime
 import inspect
 import logging
+import ntpath
 import re
 import sys
 import traceback
@@ -184,6 +185,17 @@ def redis_lock(key, timeout=None):
         raise
 
     _release_lock()
+
+
+def path_leaf(path):
+    """
+    Extracts file name from given path
+
+    :param str path: Path be extracted the file name from
+    :return str: File name
+    """
+    head, tail = ntpath.split(path)
+    return tail or ntpath.basename(head)
 
 
 class Constant(str):
