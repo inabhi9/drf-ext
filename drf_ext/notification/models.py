@@ -10,6 +10,7 @@ from django.db.models.expressions import RawSQL
 from django.db.models.query import QuerySet
 
 from drf_ext.db.models import Manager, Model
+from drf_ext.notification.mediums import Pusher
 from . import signals
 from .emailer import EmailNotification
 
@@ -33,6 +34,18 @@ class NotificationManager(Manager):
             signals.new_notification.send(instance=notification)
 
         return notification
+
+    def send(self, mediums, **kwargs):
+        assert any([medium in ('email', 'pusher') for medium in mediums])
+
+        with transaction.atomic():
+            notification = self.create(**kwargs)
+            try:
+                notification.send(mediums)
+                notification.delete()
+            except:
+                notification.delete()
+                raise
 
     def mark_all_as_read(self, user):
         """
@@ -79,7 +92,9 @@ class AbstractNotification(Model):
                                             blank=True, editable=False)
 
     objects = NotificationManager.from_queryset(NotificationQuerySet)()
+
     emailer = EmailNotification()
+    pusher = Pusher()
 
     class Meta(Model.Meta):
         abstract = True
@@ -87,14 +102,17 @@ class AbstractNotification(Model):
         ordering = ('-id',)
         default_permissions = ('add', 'view', 'delete')
 
-    def send(self, channel=('email',)):
+    def send(self, mediums=('email',)):
         L.info('Sending notification to users and groups')
 
-        if 'email' in channel:
+        if 'email' in mediums:
             res = self.emailer.send(self)
             L.info('Sent notification through email. Result: (%s) for %s', res, self)
 
-        L.info('Notification sent: %s', self)
+        if 'pusher' in mediums:
+            self.pusher.notification = self
+            res = self.pusher.send()
+            L.info('Sent notification through pusher. Result: (%s) for %s', res, self)
 
     def get_all_users(self):
         """ Get all users included in this notification """
