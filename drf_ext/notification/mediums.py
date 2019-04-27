@@ -7,8 +7,17 @@ L = logging.getLogger('drf_ext.' + __name__)
 
 class AbstractMedium:
     notification = None
+    _is_available = False
 
     def send(self):
+        if self._is_available is False:
+            L.error('%s medium is not available', self.__class__.__name__)
+            return
+
+        self.before_send()
+        self._send()
+
+    def _send(self):
         raise NotImplementedError
 
     def before_send(self):
@@ -43,7 +52,8 @@ class Pusher(AbstractMedium):
                 secret=self._secret,
                 cluster=self._cluster
             )
-        except AttributeError:
+            self._is_available = True
+        except (AttributeError, TypeError):
             L.warning('Pusher attributes are missing in the settings. Pusher will be unavailable.')
         except ImportError:
             L.warning('Pusher library is not installed. Pusher will be unavailable.')
@@ -85,7 +95,7 @@ class Pusher(AbstractMedium):
 
         return channels
 
-    def send(self):
+    def _send(self):
         assert getattr(self, '_client', None) is not None
 
         cnt = 0
