@@ -50,8 +50,6 @@ class JSONRenderer(RFJSONRenderer):
     """
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
-        from . import utils
-
         response_data = {}
         context = 'data'  # Default
 
@@ -82,8 +80,9 @@ class JSONRenderer(RFJSONRenderer):
                         ).replace(
                             'This list', '`%s`' % utils.snake_case_to_title(k)
                         )
-                        
-                data['detail'] = detail
+
+                data_flatten['detail'] = detail
+                data = data_flatten
 
         # check if the results have been paginated
         if isinstance(data, dict) and 'results' in data:
