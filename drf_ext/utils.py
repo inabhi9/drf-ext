@@ -148,7 +148,7 @@ def snake_case_to_title(s):
     :param str s: String to be converted
     :return str: Converted string
     """
-    return s.replace('_', '').title()
+    return s.replace('_', ' ').title().replace(' ', '')
 
 
 def strip_dict(d):
