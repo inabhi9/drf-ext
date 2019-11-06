@@ -40,6 +40,8 @@ When error occurs::
 """
 from rest_framework.renderers import JSONRenderer as RFJSONRenderer
 
+from . import utils
+
 
 class JSONRenderer(RFJSONRenderer):
     """
@@ -66,18 +68,21 @@ class JSONRenderer(RFJSONRenderer):
                 pass
             else:
                 detail = None
-                for k, v in data.copy().items():
+                data_flatten = utils.flatten_dict(data.copy())
+                for k, v in data_flatten.copy().items():
                     if k in ['type', 'error_code', 'status_code']:
                         continue
 
-                    err_list = data.pop(k)
+                    err_list = data_flatten.pop(k)
+                    k = k.split('.')[-1]  # last dict's key
+
                     if isinstance(err_list, list):
                         detail = err_list[0].replace(
                             'This field', '`%s`' % utils.snake_case_to_title(k)
                         ).replace(
                             'This list', '`%s`' % utils.snake_case_to_title(k)
                         )
-
+                        
                 data['detail'] = detail
 
         # check if the results have been paginated
