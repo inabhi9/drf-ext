@@ -4,6 +4,7 @@ Helpers
 =======
 Useful helper methods that frequently used in this project
 """
+import collections
 
 import datetime
 import inspect
@@ -221,3 +222,16 @@ class Constant(str):
             return self.text
         else:
             raise IndexError()
+
+            
+def flatten_dict(d, parent_key='', sep='.'):
+    items = []
+
+    for k, v in d.items():
+        new_key = parent_key + sep + k if parent_key else k
+        if isinstance(v, collections.MutableMapping):
+            items.extend(flatten_dict(v, new_key, sep=sep).items())
+        else:
+            items.append((new_key, v))
+
+    return dict(items)
