@@ -1,4 +1,5 @@
 import logging
+import re
 
 from django.conf import settings
 
@@ -15,7 +16,8 @@ class AbstractMedium:
             return
 
         self.before_send()
-        self._send()
+
+        return self._send()
 
     def _send(self):
         raise NotImplementedError
@@ -92,6 +94,9 @@ class Pusher(AbstractMedium):
         if self.notification.to_groups:
             group_ids = self.notification.to_groups.values_list('id', flat=True).all()
             channels += ['group%s' % group_id for group_id in group_ids]
+
+        if self.notification.to_emails:
+            channels += list(map(lambda x: re.sub(r'@.*', '', x), self.notification.to_emails))
 
         return channels
 
