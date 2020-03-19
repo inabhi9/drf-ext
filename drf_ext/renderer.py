@@ -40,8 +40,6 @@ When error occurs::
 """
 from rest_framework.renderers import JSONRenderer as RFJSONRenderer
 
-from . import utils
-
 
 class JSONRenderer(RFJSONRenderer):
     """
@@ -50,6 +48,8 @@ class JSONRenderer(RFJSONRenderer):
     """
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
+        from . import utils
+        
         response_data = {}
         context = 'data'  # Default
 
