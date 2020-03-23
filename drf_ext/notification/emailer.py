@@ -41,6 +41,7 @@ class EmailNotification(object):
         extra = notification.extra or {}
         secret = notification.secret or {}
         to_emails = notification.to_emails or []
+        email_vars = extra.pop('email_vars', {})
 
         extra.update(secret)
         bcc = users[1:] or []
@@ -51,6 +52,7 @@ class EmailNotification(object):
 
         # Merging user vars
         self.msg.merge_vars = getattr(self.msg, 'merge_vars', {})
+        self.msg.merge_vars.update(**email_vars)
         for user in users:
             if self.msg.merge_vars.get(user.email) is None:
                 self.msg.merge_vars[user.email] = {}
