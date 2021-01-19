@@ -8,6 +8,7 @@ import socket
 import uuid
 
 from django.utils import timezone
+from . import t_global
 
 branch = os.environ.get('APP_BRANCH') or 'n/a'
 commit_hash = os.environ.get('APP_COMMIT_HASH') or 'n/a'
@@ -32,7 +33,8 @@ class HeadInfoMiddleware(object):
         # the view (and later middleware) are called.
         start_time = timezone.now()
         request.id = uuid.uuid4().hex
-
+        t_global.request = request
+        
         response = self.get_response(request)
 
         # Code to be executed for each request/response after
