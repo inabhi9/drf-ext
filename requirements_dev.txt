@@ -5,7 +5,7 @@ celery==3.1.23
 contextlib2==0.5.4
 Django==1.9.9
 django-filter==0.14.0
-djangorestframework==3.4.6
+djangorestframework==3.11.2
 drf-extensions==0.2.8
 kombu==3.0.35
 mock==2.0.0
