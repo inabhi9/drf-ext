@@ -1,7 +1,7 @@
 amqp==1.4.9
 anyjson==0.3.3
 billiard==3.3.0.23
-celery==3.1.23
+celery==5.2.2
 contextlib2==0.5.4
 Django==1.9.9
 django-filter==0.14.0
